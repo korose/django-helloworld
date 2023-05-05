@@ -34,7 +34,7 @@ jobs:
           sed -i "s#$version#${GITHUB_REF##*/}-$git_hash#" ./kubernetes/django-deployment.yaml
             
       - name: Commit and push changes
-        uses: devops-infra/action-commit-push@v0.3
+        uses: devops-infra/action-commit-push@v0.9.2
         with:
           github_token: ${{ secrets.GIT_TOKEN }}
           commit_message: Version updated
