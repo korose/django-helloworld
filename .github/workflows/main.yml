@@ -1,6 +1,8 @@
 name: Continuous Integration and Delivery
 
-on: [push]
+on:
+  push:
+    branches: [ master ]
 
 env:
   DJANGO_IMAGE: docker.io/koroses/django-helloword-argo
@@ -19,14 +21,16 @@ jobs:
           PASSWORD: ${{ secrets.PASSWORD }}
       - name: Build images
         run: |
-          docker build -t ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/} .
+          git_hash=$(git rev-parse --short "$GITHUB_SHA")
+          docker build -t ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/}-$git_hash .
       - name: Push images
         run: |
-          docker push ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/}
+          docker push ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/}-$git_hash
       - name: Update Version
         run: |
+          git_hash=$(git rev-parse --short "$GITHUB_SHA")
           version=$(cat ./kubernetes/django-deployment.yaml | grep image: | awk '{print $2}')
-          sed -i "s/$version/${GITHUB_REF##*/}/" ./kubernetes/django-deployment.yaml
+          sed -i "s#$version#${GITHUB_REF##*/}-$git_hash#" ./kubernetes/django-deployment.yaml
             
       - name: Commit and push changes
         uses: devops-infra/action-commit-push@v0.3
