@@ -1,0 +1,35 @@
+name: Continuous Integration and Delivery
+
+on: [push]
+
+env:
+  DJANGO_IMAGE: docker.io/koroses/django-helloword-argo
+
+jobs:
+
+  build:
+    name: Build Docker Images
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout master
+        uses: actions/checkout@v1
+      - name: Log in to GitHub Packages
+        run: echo ${PASSWORD} | docker login -u ${{ secrets.USENAME }} --password-stdin
+        env:
+          PASSWORD: ${{ secrets.PASSWORD }}
+      - name: Build images
+        run: |
+          docker build -t ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/} .
+      - name: Push images
+        run: |
+          docker push ${{ env.DJANGO_IMAGE }}:${GITHUB_REF##*/}
+      - name: Update Version
+        run: |
+          version=$(cat ./kubernetes/django-deployment.yaml | grep image: | awk '{print $2}')
+          sed -i "s/$version/${GITHUB_REF##*/}/" ./kubernetes/django-deployment.yaml
+            
+      - name: Commit and push changes
+        uses: devops-infra/action-commit-push@v0.3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          commit_message: Version updated

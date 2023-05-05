@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: django
+spec:
+  rules:
+  - host: django-helloword.localhost
+    http:
+      paths:
+      - pathType: Prefix
+        path: /
+        backend:
+          service:
+            name: django
+            port:
+              number: 8080
+  tls:
+  - hosts:
+    - django-helloword.localhost
