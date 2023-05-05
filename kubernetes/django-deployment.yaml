@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: django0
-        image: docker.io/koroses/django-helloword-argo:master-6e9412c
+        image: docker.io/koroses/django-helloword-argo:master-79f95f7
         resources:
           limits:
             memory: "128Mi"
