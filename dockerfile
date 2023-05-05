@@ -11,4 +11,4 @@ RUN pip install -r requirements.txt
 # start server
 EXPOSE 8000
 STOPSIGNAL SIGTERM
-CMD ["/usr/bin/python3 manage.py runserver"]
+CMD ["manage.py runserver"]
