@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout master
-        uses: actions/checkout@v1
+        uses: actions/checkout@v3
       - name: Log in to Docker Hub
         run: echo ${PASSWORD} | docker login -u ${{ secrets.USENAME }} --password-stdin
         env:
@@ -38,4 +38,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           commit_message: Version updated
-          force: true
